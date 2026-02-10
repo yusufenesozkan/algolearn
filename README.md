@@ -33,45 +33,6 @@ npm run dev
 
 Uygulama `http://localhost:3000` adresinde çalışacaktır.
 
-## Mevcut Algoritmalar
-
-### Sıralama
-- Bubble Sort
-- Quick Sort
-
-### Arama
-- Binary Search
-
-### Graf
-- Depth First Search (DFS)
-- Breadth First Search (BFS)
-
-## Proje Yapısı
-
-```
-frontend/
-├── src/
-│   ├── app/                    # Next.js sayfaları
-│   │   ├── algorithms/[id]/    # Algoritma detay sayfası
-│   │   └── page.tsx            # Ana sayfa
-│   ├── components/
-│   │   ├── FlowEditor/         # Akış diyagramı editörü
-│   │   ├── CodeEditor/         # Kaba kod editörü
-│   │   └── Visualizer/         # Algoritma görselleştirici
-│   ├── data/
-│   │   └── algorithms.ts       # Algoritma verileri
-│   └── types/
-│       └── index.ts            # TypeScript tipleri
-```
-
-## Katkıda Bulunma
-
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
-4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
-
 ## Yol Haritası
 
 - [ ] Daha fazla algoritma ekle
