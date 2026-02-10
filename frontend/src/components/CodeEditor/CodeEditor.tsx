@@ -66,9 +66,7 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
       setOutput((prev) => 
         prev + `✓ Algoritma başarıyla çalıştırıldı!\n\n` +
         `Açıklama:\n` +
-        `Bu ${algorithm.name} algoritmasıdır.\n` +
-        `Zaman karmaşıklığı: ${algorithm.complexity.time}\n` +
-        `Mekan karmaşıklığı: ${algorithm.complexity.space}\n\n` +
+        `Bu ${algorithm.name} algoritmasıdır.\n\n` +
         `Adımlar:\n` +
         algorithm.steps.map(s => `${s.id}. ${s.description}`).join('\n')
       );

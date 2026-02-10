@@ -14,6 +14,7 @@ type Tab = 'info' | 'flow' | 'code' | 'visualize';
 export default function AlgorithmPage() {
   const params = useParams();
   const algorithm = getAlgorithmById(params.id as string);
+  const category = params.category as string;
   const [activeTab, setActiveTab] = useState<Tab>('info');
 
   if (!algorithm) {
@@ -35,28 +36,16 @@ export default function AlgorithmPage() {
       <div className="bg-gray-800 border-b border-gray-700 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <Link
-            href="/"
-            className="inline-flex items-center text-gray-400 hover:text-gray-200 mb-4"
+            href={`/algorithms/${category}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg shadow-blue-900/50 hover:shadow-blue-900/70 mb-4"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-5 h-5" />
             Geri Dön
           </Link>
           
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold mb-2 text-white">{algorithm.name}</h1>
-              <p className="text-gray-400">{algorithm.description}</p>
-            </div>
-            <div className="flex gap-4 text-sm">
-              <div className="bg-blue-900/30 px-4 py-2 rounded-lg border border-blue-800">
-                <span className="text-gray-400">Zaman:</span>
-                <span className="ml-2 font-mono font-bold text-blue-400">{algorithm.complexity.time}</span>
-              </div>
-              <div className="bg-green-900/30 px-4 py-2 rounded-lg border border-green-800">
-                <span className="text-gray-400">Mekan:</span>
-                <span className="ml-2 font-mono font-bold text-green-400">{algorithm.complexity.space}</span>
-              </div>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold mb-2 text-white">{algorithm.name}</h1>
+            <p className="text-gray-400">{algorithm.description}</p>
           </div>
         </div>
       </div>
