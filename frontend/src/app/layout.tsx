@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AlgoLearn - Algoritma Öğrenme Platformu",
   description: "Algoritma ve veri yapılarını görselleştirerek öğren! Akış diyagramları ve kaba kod ile adım adım keşfet.",
+  keywords: "algoritma, veri yapıları, sorting, graph, kodlama",
 };
 
 export default function RootLayout({
