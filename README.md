@@ -88,3 +88,5 @@ MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 ---
 
 **AlgoLearn** - Algoritmaları öğrenmenin en kolay yolu! 🚀
+
+*Son güncelleme: Şubat 2026*
