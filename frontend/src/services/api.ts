@@ -1,5 +1,3 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
 export interface AlgorithmStep {
   step: number;
   description: string;
@@ -24,7 +22,8 @@ export const executeSortingAlgorithm = async (
   input: number[]
 ): Promise<SortingResult> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/algorithms/sorting/${algorithmType}`, {
+    // Use relative URL for Vercel (same domain)
+    const response = await fetch(`/api/algorithms/sorting/${algorithmType}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,9 +47,10 @@ export const executeSortingAlgorithm = async (
 
 export const getSortingAlgorithms = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/algorithms/sorting`);
+    // Use relative URL for Vercel (same domain)
+    const response = await fetch(`/api/algorithms/sorting/bubble-sort`);
     const data = await response.json();
-    return data.algorithms;
+    return data.algorithms || [];
   } catch (error) {
     console.error('Failed to fetch algorithms:', error);
     return [];
