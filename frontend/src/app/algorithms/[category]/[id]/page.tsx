@@ -109,26 +109,6 @@ export default function AlgorithmPage() {
                   <p>Video Tanıtım (Yakında)</p>
                 </div>
               </div>
-              
-              <div>
-                <h3 className="text-xl font-bold mb-4 text-white">Algoritma Adımları</h3>
-                <div className="space-y-4">
-                  {algorithm.steps.map((step) => (
-                    <div
-                      key={step.id}
-                      className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-700/50 rounded-r-lg"
-                    >
-                      <h4 className="font-semibold mb-1 text-gray-200">
-                        {step.id}. {step.description}
-                      </h4>
-                      <code className="block bg-gray-900 p-2 rounded text-sm font-mono mb-2 text-green-400 border border-gray-700">
-                        {step.pseudoCode}
-                      </code>
-                      <p className="text-gray-400 text-sm">{step.explanation}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
