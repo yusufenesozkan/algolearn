@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { algorithms } from '@/data/algorithms';
-import { Layers, Network, BookOpen, ArrowRight } from 'lucide-react';
+import { Layers, Network, BookOpen, ArrowRight, Search } from 'lucide-react';
 
 const categoryConfig: Record<string, { name: string; icon: any; color: string; bgColor: string; borderColor: string; description: string }> = {
   sorting: {
@@ -12,6 +12,14 @@ const categoryConfig: Record<string, { name: string; icon: any; color: string; b
     bgColor: 'bg-blue-900/20 hover:bg-blue-900/30',
     borderColor: 'border-blue-800',
     description: 'Verileri düzenlemek için kullanılan algoritmalar',
+  },
+  searching: {
+    name: 'Arama Algoritmaları',
+    icon: Search,
+    color: 'text-green-400',
+    bgColor: 'bg-green-900/20 hover:bg-green-900/30',
+    borderColor: 'border-green-800',
+    description: 'Veri yapılarında eleman aramak için kullanılan algoritmalar',
   },
   graph: {
     name: 'Graph Algoritmaları',

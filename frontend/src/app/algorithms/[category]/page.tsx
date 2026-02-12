@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { algorithms } from '@/data/algorithms';
-import { ArrowLeft, Play, Layers, Network, BookOpen } from 'lucide-react';
+import { ArrowLeft, Play, Layers, Network, BookOpen, Search } from 'lucide-react';
 
 const categoryConfig: Record<string, { name: string; icon: any; color: string; bgColor: string; borderColor: string; description: string }> = {
   sorting: {
@@ -13,6 +13,14 @@ const categoryConfig: Record<string, { name: string; icon: any; color: string; b
     bgColor: 'bg-blue-900/20',
     borderColor: 'border-blue-800',
     description: 'Verileri belirli bir düzende sıralamak için kullanılan algoritmalar',
+  },
+  searching: {
+    name: 'Arama Algoritmaları',
+    icon: Search,
+    color: 'text-green-400',
+    bgColor: 'bg-green-900/20',
+    borderColor: 'border-green-800',
+    description: 'Veri yapılarında eleman aramak için kullanılan algoritmalar',
   },
   graph: {
     name: 'Graph Algoritmaları',
