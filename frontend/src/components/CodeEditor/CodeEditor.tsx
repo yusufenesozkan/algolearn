@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Algorithm } from '@/types';
-import { Play, RotateCcw } from 'lucide-react';
+import { Play, RotateCcw, Terminal } from 'lucide-react';
 import { executeJavaScriptCode } from '@/services/api';
 
 interface CodeEditorProps {
@@ -151,17 +151,20 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
   const [code, setCode] = useState(
     defaultJavaScriptCode[algorithm.id] || defaultJavaScriptCode['default']
   );
+  const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Record<string, any>>({});
 
   const runCode = async () => {
     setIsRunning(true);
+    setOutput('Kod çalıştırılıyor...\n');
 
     try {
       const input = [64, 34, 25, 12, 22, 11, 90];
       const result = await executeJavaScriptCode(code, input);
       
       if (result.success) {
+        setOutput(result.output || 'Kod çalıştırıldı (çıktı yok)');
         // Değişkenleri güncelle (şimdilik örnek)
         setVariables({
           input: input,
@@ -170,9 +173,11 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
           j: '-',
           temp: '-'
         });
+      } else {
+        setOutput(`HATA: ${result.error || 'Bilinmeyen hata'}`);
       }
     } catch (error) {
-      console.error('Kod çalıştırma hatası:', error);
+      setOutput(`HATA: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
     } finally {
       setIsRunning(false);
     }
@@ -180,11 +185,12 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
 
   const resetCode = () => {
     setCode(defaultJavaScriptCode[algorithm.id] || defaultJavaScriptCode['default']);
+    setOutput('');
     setVariables({});
   };
 
   return (
-    <div className="space-y-4">
+    <div className="h-[calc(100vh-200px)] flex flex-col gap-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -210,12 +216,12 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Sol: Kod Editörü - DAHA UZUN */}
-        <div className="border rounded-lg overflow-hidden">
+      {/* Main Content - Daha Uzun */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
+        {/* Sol: Kod Editörü - ÇOK DAHA UZUN */}
+        <div className="border rounded-lg overflow-hidden h-full">
           <Editor
-            height="600px"
+            height="100%"
             defaultLanguage="javascript"
             value={code}
             onChange={(value) => setCode(value || '')}
@@ -227,14 +233,15 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
               roundedSelection: false,
               scrollBeyondLastLine: false,
               readOnly: false,
+              automaticLayout: true,
             }}
           />
         </div>
 
-        {/* Sağ: İkiye Bölünmüş Panel */}
-        <div className="flex flex-col gap-4">
+        {/* Sağ: İkiye Bölünmüş Panel - Daha Uzun */}
+        <div className="flex flex-col gap-4 h-full">
           {/* Üst Yarı: Değişkenler */}
-          <div className="border rounded-lg p-4 bg-gray-800 flex-1">
+          <div className="border rounded-lg p-4 bg-gray-800 flex-1 overflow-auto">
             <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
               <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
               Değişkenler
@@ -250,20 +257,20 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-gray-500 text-center py-8">
                   Kodu çalıştırdıktan sonra değişkenler burada görünecek
                 </p>
               )}
             </div>
           </div>
 
-          {/* Alt Yarı: Görsel Elemanlar (Placeholder) */}
-          <div className="border rounded-lg p-4 bg-gray-800 flex-1">
+          {/* Alt Yarı: Görsel Elemanlar */}
+          <div className="border rounded-lg p-4 bg-gray-800 flex-1 overflow-auto">
             <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
               <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
               Görselleştirme
             </h4>
-            <div className="h-full flex items-center justify-center bg-gray-900 rounded min-h-[150px]">
+            <div className="h-full flex items-center justify-center bg-gray-900 rounded min-h-[200px]">
               <p className="text-gray-500 text-center">
                 Görsel elemanlar buraya eklenecek<br/>
                 <span className="text-xs">(Çubuk grafik, animasyon, vb.)</span>
@@ -273,6 +280,22 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
         </div>
       </div>
 
+      {/* Alt: Konsol Çıktısı - Geniş ve Uzun */}
+      <div className="border rounded-lg p-4 bg-gray-900 text-white font-mono text-sm h-[250px] flex flex-col">
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="text-gray-400 flex items-center gap-2">
+            <Terminal className="w-4 h-4" />
+            Konsol Çıktısı
+          </h4>
+        </div>
+        <div className="flex-1 overflow-auto bg-gray-950 p-3 rounded border border-gray-800">
+          {output ? (
+            <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+          ) : (
+            <p className="text-gray-500">Kodu çalıştırmak için "Çalıştır" butonuna tıklayın...</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
