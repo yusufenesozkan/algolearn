@@ -7,9 +7,8 @@ import { ArrowLeft, Play, Code, GitBranch } from 'lucide-react';
 import { useState } from 'react';
 import FlowEditor from '@/components/FlowEditor/FlowEditor';
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
-import Visualizer from '@/components/Visualizer/Visualizer';
 
-type Tab = 'info' | 'flow' | 'code' | 'visualize';
+type Tab = 'info' | 'flow' | 'code';
 
 export default function AlgorithmPage() {
   const params = useParams();
@@ -86,17 +85,6 @@ export default function AlgorithmPage() {
             <Code className="w-4 h-4" />
             Kaba Kod
           </button>
-          <button
-            onClick={() => setActiveTab('visualize')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'visualize'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-            }`}
-          >
-            <Play className="w-4 h-4" />
-            Görselleştir
-          </button>
         </div>
 
         {/* Tab Content */}
@@ -114,7 +102,6 @@ export default function AlgorithmPage() {
 
           {activeTab === 'flow' && <FlowEditor algorithm={algorithm} />}
           {activeTab === 'code' && <CodeEditor algorithm={algorithm} />}
-          {activeTab === 'visualize' && <Visualizer algorithm={algorithm} />}
         </div>
       </div>
     </div>
