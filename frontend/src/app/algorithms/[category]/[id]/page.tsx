@@ -64,17 +64,6 @@ export default function AlgorithmPage() {
             Tanıtım
           </button>
           <button
-            onClick={() => setActiveTab('flow')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'flow'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-            }`}
-          >
-            <GitBranch className="w-4 h-4" />
-            Akış Diyagramı
-          </button>
-          <button
             onClick={() => setActiveTab('code')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
               activeTab === 'code'
@@ -84,6 +73,17 @@ export default function AlgorithmPage() {
           >
             <Code className="w-4 h-4" />
             Kaba Kod
+          </button>
+          <button
+            onClick={() => setActiveTab('flow')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+              activeTab === 'flow'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
+            }`}
+          >
+            <GitBranch className="w-4 h-4" />
+            Akış Diyagramı
           </button>
         </div>
 
