@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Algorithm } from '@/types';
-import { Play, RotateCcw, Terminal } from 'lucide-react';
+import { Play, RotateCcw, Terminal, SkipBack, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
 import { executeJavaScriptCode } from '@/services/api';
 
 interface CodeEditorProps {
@@ -154,6 +154,8 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Record<string, any>>({});
+  const [currentStep, setCurrentStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(0);
 
   const runCode = async () => {
     setIsRunning(true);
@@ -165,12 +167,15 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
       
       if (result.success) {
         setOutput(result.output || 'Kod çalıştırıldı (çıktı yok)');
-        // Değişkenleri güncelle (şimdilik örnek)
+        // Örnek adım sayısı
+        setTotalSteps(15);
+        setCurrentStep(1);
+        // Değişkenleri güncelle
         setVariables({
           input: input,
           result: 'Hesaplanıyor...',
-          i: '-',
-          j: '-',
+          i: 0,
+          j: 1,
           temp: '-'
         });
       } else {
@@ -187,20 +192,64 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
     setCode(defaultJavaScriptCode[algorithm.id] || defaultJavaScriptCode['default']);
     setOutput('');
     setVariables({});
+    setCurrentStep(0);
+    setTotalSteps(0);
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      // Burada önceki adımın verilerini yükle
+    }
+  };
+
+  const handleNextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+      // Burada sonraki adımın verilerini yükle
+    }
   };
 
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col gap-4">
-      {/* Header */}
+    <div className="h-[calc(100vh-120px)] flex flex-col gap-3">
+      {/* Üst Kısım: Başlık ve Kontroller */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">JavaScript Editörü</h3>
-          <p className="text-sm text-gray-400">Kodu yazın ve çalıştırın</p>
+          <h3 className="text-xl font-semibold">JavaScript Editörü</h3>
+          <p className="text-sm text-gray-400">Kodu yazın ve adım adım çalıştırın</p>
         </div>
+        
+        {/* Adım Kontrol Butonları */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handlePrevStep}
+            disabled={currentStep <= 1}
+            className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Önceki
+          </button>
+          
+          <div className="px-4 py-2 bg-gray-800 rounded border border-gray-700 min-w-[120px] text-center">
+            <span className="text-lg font-bold text-white">{currentStep}</span>
+            <span className="text-gray-500"> / {totalSteps || '-'}</span>
+          </div>
+          
+          <button
+            onClick={handleNextStep}
+            disabled={currentStep >= totalSteps || totalSteps === 0}
+            className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Sonraki
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Sıfırla ve Çalıştır */}
         <div className="flex gap-2">
           <button
             onClick={resetCode}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
           >
             <RotateCcw className="w-4 h-4" />
             Sıfırla
@@ -208,18 +257,18 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
           <button
             onClick={runCode}
             disabled={isRunning}
-            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50 font-semibold"
           >
             <Play className="w-4 h-4" />
-            {isRunning ? 'Çalışıyor...' : 'Çalıştır'}
+            {isRunning ? 'Çalışıyor...' : 'Başlat'}
           </button>
         </div>
       </div>
 
-      {/* Main Content - Daha Uzun */}
+      {/* Ana İçerik - Çok Daha Uzun */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
-        {/* Sol: Kod Editörü - ÇOK DAHA UZUN */}
-        <div className="border rounded-lg overflow-hidden h-full">
+        {/* Sol: Kod Editörü */}
+        <div className="border-2 border-gray-700 rounded-lg overflow-hidden h-full">
           <Editor
             height="100%"
             defaultLanguage="javascript"
@@ -228,7 +277,7 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
             theme="vs-dark"
             options={{
               minimap: { enabled: false },
-              fontSize: 14,
+              fontSize: 16,
               lineNumbers: 'on',
               roundedSelection: false,
               scrollBeyondLastLine: false,
@@ -238,26 +287,26 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
           />
         </div>
 
-        {/* Sağ: İkiye Bölünmüş Panel - Daha Uzun */}
+        {/* Sağ: İkiye Bölünmüş Panel */}
         <div className="flex flex-col gap-4 h-full">
           {/* Üst Yarı: Değişkenler */}
-          <div className="border rounded-lg p-4 bg-gray-800 flex-1 overflow-auto">
-            <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+          <div className="border-2 border-gray-700 rounded-lg p-5 bg-gray-800 flex-1 overflow-auto">
+            <h4 className="text-gray-200 font-bold mb-4 flex items-center gap-2 text-lg">
+              <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
               Değişkenler
             </h4>
-            <div className="space-y-2 font-mono text-sm">
+            <div className="space-y-3 font-mono text-base">
               {Object.keys(variables).length > 0 ? (
                 Object.entries(variables).map(([key, value]) => (
-                  <div key={key} className="flex justify-between items-center bg-gray-900 p-2 rounded">
-                    <span className="text-blue-400">{key}</span>
+                  <div key={key} className="flex justify-between items-center bg-gray-900 p-3 rounded-lg border border-gray-700">
+                    <span className="text-blue-400 font-bold">{key}</span>
                     <span className="text-green-400">
                       {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                     </span>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-gray-500 text-center py-12 text-lg">
                   Kodu çalıştırdıktan sonra değişkenler burada görünecek
                 </p>
               )}
@@ -265,34 +314,39 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
           </div>
 
           {/* Alt Yarı: Görsel Elemanlar */}
-          <div className="border rounded-lg p-4 bg-gray-800 flex-1 overflow-auto">
-            <h4 className="text-gray-300 font-semibold mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          <div className="border-2 border-gray-700 rounded-lg p-5 bg-gray-800 flex-1 overflow-auto">
+            <h4 className="text-gray-200 font-bold mb-4 flex items-center gap-2 text-lg">
+              <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
               Görselleştirme
             </h4>
-            <div className="h-full flex items-center justify-center bg-gray-900 rounded min-h-[200px]">
-              <p className="text-gray-500 text-center">
+            <div className="h-full flex items-center justify-center bg-gray-900 rounded-lg min-h-[250px] border border-gray-700">
+              <p className="text-gray-500 text-center text-lg">
                 Görsel elemanlar buraya eklenecek<br/>
-                <span className="text-xs">(Çubuk grafik, animasyon, vb.)</span>
+                <span className="text-base">(Çubuk grafik, animasyon, vb.)</span>
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Alt: Konsol Çıktısı - Geniş ve Uzun */}
-      <div className="border rounded-lg p-4 bg-gray-900 text-white font-mono text-sm h-[250px] flex flex-col">
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="text-gray-400 flex items-center gap-2">
-            <Terminal className="w-4 h-4" />
+      {/* Alt: Konsol Çıktısı - Daha Geniş */}
+      <div className="border-2 border-gray-700 rounded-lg p-5 bg-gray-900 text-white font-mono text-base h-[300px] flex flex-col">
+        <div className="flex justify-between items-center mb-3">
+          <h4 className="text-gray-300 flex items-center gap-2 text-lg font-bold">
+            <Terminal className="w-5 h-5" />
             Konsol Çıktısı
           </h4>
+          {currentStep > 0 && (
+            <span className="text-sm text-gray-500">
+              Adım {currentStep} / {totalSteps}
+            </span>
+          )}
         </div>
-        <div className="flex-1 overflow-auto bg-gray-950 p-3 rounded border border-gray-800">
+        <div className="flex-1 overflow-auto bg-black p-4 rounded-lg border border-gray-800">
           {output ? (
-            <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+            <pre className="whitespace-pre-wrap text-base leading-relaxed">{output}</pre>
           ) : (
-            <p className="text-gray-500">Kodu çalıştırmak için "Çalıştır" butonuna tıklayın...</p>
+            <p className="text-gray-500 text-lg">Kodu çalıştırmak için "Başlat" butonuna tıklayın...</p>
           )}
         </div>
       </div>
