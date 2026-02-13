@@ -56,3 +56,42 @@ export const getSortingAlgorithms = async () => {
     return [];
   }
 };
+
+// JavaScript kodu çalıştırma
+export interface CodeExecutionResult {
+  success: boolean;
+  output: string;
+  steps: Array<{
+    line: number;
+    description: string;
+    variables: Record<string, any>;
+  }>;
+  error?: string;
+  executionTime: number;
+}
+
+export const executeJavaScriptCode = async (
+  code: string,
+  input?: any[]
+): Promise<CodeExecutionResult> => {
+  try {
+    const response = await fetch('/api/execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, input }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return {
+      success: false,
+      output: '',
+      steps: [],
+      error: error instanceof Error ? error.message : 'Kod çalıştırılamadı',
+      executionTime: 0,
+    };
+  }
+};
