@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { VM } from 'vm2';
-
-export interface ExecutionStep {
-  line: number;
-  description: string;
-  variables: Record<string, any>;
-  output?: string;
-}
+import { createContext, runInNewContext } from 'vm';
 
 export interface ExecutionResult {
   success: boolean;
   output: string;
-  steps: ExecutionStep[];
+  steps: Array<{
+    line: number;
+    description: string;
+    variables: Record<string, any>;
+  }>;
   error?: string;
   executionTime: number;
 }
@@ -29,68 +26,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const steps: ExecutionStep[] = [];
     let output = '';
-    let lineNumber = 0;
+    const steps: Array<{ line: number; description: string; variables: Record<string, any> }> = [];
 
-    // Güvenli sandbox ortamı oluştur
-    const vm = new VM({
-      timeout: 5000, // 5 saniye timeout
-      sandbox: {
-        input: input || [],
-        console: {
-          log: (...args: any[]) => {
-            output += args.map(arg => String(arg)).join(' ') + '\n';
-          }
-        },
-        // Adım takibi için yardımcı fonksiyon
-        _trackStep: (desc: string, vars: Record<string, any>) => {
-          steps.push({
-            line: lineNumber,
-            description: desc,
-            variables: { ...vars }
-          });
+    // Sandbox context oluştur
+    const context = createContext({
+      input: input || [64, 34, 25, 12, 22, 11, 90],
+      console: {
+        log: (...args: any[]) => {
+          output += args.map(arg => {
+            if (typeof arg === 'object') {
+              return JSON.stringify(arg);
+            }
+            return String(arg);
+          }).join(' ') + '\n';
         }
-      }
+      },
+      // Temel matematik fonksiyonları
+      Math: Math,
+      JSON: JSON,
+      Array: Array,
+      Object: Object,
+      Number: Number,
+      String: String,
+      Boolean: Boolean,
+      Date: Date,
+      parseInt: parseInt,
+      parseFloat: parseFloat,
+      isNaN: isNaN,
+      isFinite: isFinite,
     });
 
-    // Kodu satır satır çalıştır ve adımları kaydet
-    const lines = code.split('\n');
-    const instrumentedCode = lines.map((line, index) => {
-      const trimmedLine = line.trim();
-      
-      // Boş satırları ve yorumları atla
-      if (!trimmedLine || trimmedLine.startsWith('//')) {
-        return line;
-      }
-      
-      // Return, fonksiyon tanımları ve if/else gibi kontrol yapılarını özel işle
-      if (trimmedLine.startsWith('function') || 
-          trimmedLine.startsWith('const') || 
-          trimmedLine.startsWith('let') || 
-          trimmedLine.startsWith('var')) {
-        return line;
-      }
-      
-      // Her satırın sonunda değişkenleri kaydet
-      return `
-        ${line}
-        try {
-          _trackStep("Satır ${index + 1}: ${trimmedLine.replace(/"/g, "'")}", {
-            input: typeof input !== 'undefined' ? input : undefined,
-            i: typeof i !== 'undefined' ? i : undefined,
-            j: typeof j !== 'undefined' ? j : undefined,
-            temp: typeof temp !== 'undefined' ? temp : undefined,
-            n: typeof n !== 'undefined' ? n : undefined,
-            arr: typeof arr !== 'undefined' ? arr : undefined
-          });
-        } catch(e) {}
-      `;
-    }).join('\n');
-
-    // Kodu çalıştır
+    // Timeout ile çalıştır (5 saniye)
+    const script = code;
+    
     try {
-      vm.run(instrumentedCode);
+      runInNewContext(script, context, {
+        timeout: 5000,
+        displayErrors: true,
+      });
     } catch (execError) {
       return NextResponse.json({
         success: false,
