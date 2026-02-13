@@ -151,24 +151,17 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
   const [code, setCode] = useState(
     defaultJavaScriptCode[algorithm.id] || defaultJavaScriptCode['default']
   );
-  const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
-  const [executionTime, setExecutionTime] = useState(0);
   const [variables, setVariables] = useState<Record<string, any>>({});
 
   const runCode = async () => {
     setIsRunning(true);
-    setOutput('Kod çalıştırılıyor...\n');
-    setExecutionTime(0);
 
     try {
       const input = [64, 34, 25, 12, 22, 11, 90];
       const result = await executeJavaScriptCode(code, input);
       
-      setExecutionTime(result.executionTime);
-      
       if (result.success) {
-        setOutput(result.output || 'Kod çalıştırıldı (çıktı yok)');
         // Değişkenleri güncelle (şimdilik örnek)
         setVariables({
           input: input,
@@ -177,11 +170,9 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
           j: '-',
           temp: '-'
         });
-      } else {
-        setOutput(`HATA: ${result.error || 'Bilinmeyen hata'}`);
       }
     } catch (error) {
-      setOutput(`HATA: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+      console.error('Kod çalıştırma hatası:', error);
     } finally {
       setIsRunning(false);
     }
@@ -189,8 +180,6 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
 
   const resetCode = () => {
     setCode(defaultJavaScriptCode[algorithm.id] || defaultJavaScriptCode['default']);
-    setOutput('');
-    setExecutionTime(0);
     setVariables({});
   };
 
@@ -284,27 +273,6 @@ export default function CodeEditor({ algorithm }: CodeEditorProps) {
         </div>
       </div>
 
-      {/* Alt: Çıktı */}
-      <div className="border rounded-lg p-4 bg-gray-900 text-white font-mono text-sm">
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="text-gray-400 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            Konsol Çıktısı
-          </h4>
-          {executionTime > 0 && (
-            <span className="text-xs text-gray-500">
-              {executionTime}ms
-            </span>
-          )}
-        </div>
-        <div className="h-32 overflow-auto bg-gray-950 p-3 rounded">
-          {output ? (
-            <pre className="whitespace-pre-wrap text-sm">{output}</pre>
-          ) : (
-            <p className="text-gray-500">Kodu çalıştırmak için "Çalıştır" butonuna tıklayın...</p>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
