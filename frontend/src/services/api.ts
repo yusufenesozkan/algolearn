@@ -57,7 +57,7 @@ export const getSortingAlgorithms = async () => {
   }
 };
 
-// JavaScript kodu çalıştırma
+// JavaScript kodu çalıştırma (tek seferlik)
 export interface CodeExecutionResult {
   success: boolean;
   output: string;
@@ -90,6 +90,52 @@ export const executeJavaScriptCode = async (
       success: false,
       output: '',
       steps: [],
+      error: error instanceof Error ? error.message : 'Kod çalıştırılamadı',
+      executionTime: 0,
+    };
+  }
+};
+
+// Adım adım kod çalıştırma
+export interface StepData {
+  stepNumber: number;
+  line: number;
+  description: string;
+  variables: Record<string, any>;
+  input: number[];
+  comparing: number[];
+  swapping: number[];
+}
+
+export interface StepExecutionResult {
+  success: boolean;
+  steps: StepData[];
+  totalSteps: number;
+  output: string;
+  error?: string;
+  executionTime: number;
+}
+
+export const executeJavaScriptCodeStepByStep = async (
+  code: string
+): Promise<StepExecutionResult> => {
+  try {
+    const response = await fetch('/api/execute-step', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return {
+      success: false,
+      steps: [],
+      totalSteps: 0,
+      output: '',
       error: error instanceof Error ? error.message : 'Kod çalıştırılamadı',
       executionTime: 0,
     };

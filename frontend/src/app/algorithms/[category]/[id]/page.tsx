@@ -88,7 +88,7 @@ export default function AlgorithmPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700">
+        <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 border border-gray-700 min-h-[800px]">
           {activeTab === 'info' && (
             <div className="space-y-6">
               <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center border border-gray-700">
