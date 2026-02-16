@@ -7,9 +7,8 @@ import { ArrowLeft, Play, Code, GitBranch } from 'lucide-react';
 import { useState } from 'react';
 import FlowEditor from '@/components/FlowEditor/FlowEditor';
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
-import Visualizer from '@/components/Visualizer/Visualizer';
 
-type Tab = 'info' | 'flow' | 'code' | 'visualize';
+type Tab = 'info' | 'flow' | 'code';
 
 export default function AlgorithmPage() {
   const params = useParams();
@@ -65,17 +64,6 @@ export default function AlgorithmPage() {
             Tanıtım
           </button>
           <button
-            onClick={() => setActiveTab('flow')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'flow'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-            }`}
-          >
-            <GitBranch className="w-4 h-4" />
-            Akış Diyagramı
-          </button>
-          <button
             onClick={() => setActiveTab('code')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
               activeTab === 'code'
@@ -87,20 +75,20 @@ export default function AlgorithmPage() {
             Kaba Kod
           </button>
           <button
-            onClick={() => setActiveTab('visualize')}
+            onClick={() => setActiveTab('flow')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'visualize'
+              activeTab === 'flow'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
             }`}
           >
-            <Play className="w-4 h-4" />
-            Görselleştir
+            <GitBranch className="w-4 h-4" />
+            Akış Diyagramı
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700">
+        <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 border border-gray-700 min-h-[800px]">
           {activeTab === 'info' && (
             <div className="space-y-6">
               <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center border border-gray-700">
@@ -114,7 +102,6 @@ export default function AlgorithmPage() {
 
           {activeTab === 'flow' && <FlowEditor algorithm={algorithm} />}
           {activeTab === 'code' && <CodeEditor algorithm={algorithm} />}
-          {activeTab === 'visualize' && <Visualizer algorithm={algorithm} />}
         </div>
       </div>
     </div>
